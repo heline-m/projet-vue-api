@@ -5,6 +5,67 @@
     <title>Game Of Throne</title>
 </head>
 <body>
+<div id="demo">
+    <!-- <pre>{{commits}}</pre> -->
+    <h1>Informations sur les maisons et les personnages de Game Of Throne</h1>
+    <template v-for="choice in choices">
+        <input
+                type="radio"
+                :id="choice"
+                :value="choice"
+                name="choice"
+                v-model="currentChoice"
+        />
+        <label :for="choice">{{ choice }}</label>
+    </template>
+    <p>Vous avez choisi d'afficher : {{ currentChoice }}</p>
+    <ul>
+        <li v-if="currentChoice === 'houses'" v-for="data in datas">
+            <span class="message">{{ data.name }}</span><br/>
+        </li>
+    </ul>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@3"></script>
+<script>
+    const apiURL =
+        "https://anapioficeandfire.com/api/";
+    const config = {
+    };
 
+    Vue.createApp({
+        data() {
+            return {
+                choices: ["houses", "characters"],
+                currentChoice: "houses",
+                datas: null,
+            };
+        },
+
+        created: function () {
+            this.fetchDataPromise();
+            // this.fetchDataAsync()
+        },
+
+        watch: {
+            currentBranch: "fetchDataPromise", //fetchDataAsync
+        },
+        methods: {
+            fetchDataPromise: function () {
+                const self = this;
+                axios
+                    .get(apiURL + self.currentChoice, config)
+                    .then(function (response) {
+                        console.log(response.data);
+                        self.datas = response.data;
+                        // console.log(self.commits[0].html_url);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+        },
+    }).mount("#demo");
+</script>
 </body>
 </html>
